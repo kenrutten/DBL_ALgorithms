@@ -1,3 +1,5 @@
+package main;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -8,9 +10,7 @@ import java.awt.geom.*;
 import java.io.*;
 import java.util.Random;
 import java.util.Scanner;
-import main.Constants;
-import main.Label2Pos;
-import main.Solver2Pos;
+
 /**
  * The master class is the main class of the project, it reads input from a file
  * or from the Scanner and provides output via standard output.
@@ -110,8 +110,8 @@ public class Master {
             Label2Pos[] solution = solver.solve(points, aspectRatio);
         } 
         else if (model.equals(Constants.POS_4)) {
-            // Solve for 4 pos model.
-            // TODO
+            Solver4Pos solver4pos = new Solver4Pos();
+            Label2Pos[] solution = solver4pos.solve(points, aspectRatio);
         } 
         else {
             // Solve for slider model.

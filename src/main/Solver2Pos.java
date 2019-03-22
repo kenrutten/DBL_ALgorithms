@@ -8,7 +8,6 @@ package main;
 import java.awt.geom.*;
 import java.io.*;
 import java.util.*;
-import main.Solver;
 
 // Comparator that sorts points on X asc then on Y asc
 class PointCmp implements Comparator<Point2D> {
