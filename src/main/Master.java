@@ -132,16 +132,16 @@ public class Master {
         if (model.equals(Constants.POS_SLIDER)) {
             System.out.println("height: " + sliderSolution[0].height);
             for (int i = 0; i < numOfPoints; i++) {
-                System.out.println(sliderSolution[i].point.getX() + " " + 
-                        sliderSolution[i].point.getY() + " " + 
+                System.out.println((int) sliderSolution[i].point.getX() + " " + 
+                        (int) sliderSolution[i].point.getY() + " " + 
                         sliderSolution[i].placement);
                 
             }
         } else {
             System.out.println("height: " + posSolution[0].height);
             for (int i = 0; i < numOfPoints; i++) {
-                System.out.println(posSolution[i].point.getX() + " " + 
-                        posSolution[i].point.getY() + " " + 
+                System.out.println((int) posSolution[i].point.getX() + " " + 
+                        (int) posSolution[i].point.getY() + " " + 
                         posSolution[i].posType);
                 
             }
