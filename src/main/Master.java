@@ -32,6 +32,8 @@ public class Master {
     String[] posPlacement;
     float[] sliderPlacement;
     float height = 1.25f;
+    LabelPos[] posSolution;
+    SliderPos[] sliderSolution;
 
     // Read the input via the scanner.
     Master() {
@@ -61,10 +63,11 @@ public class Master {
             points[i] = new Point2D.Float((int) Float.parseFloat(val[0]), (int) Float.parseFloat(val[1]));
         }
         this.inputRead();
+        this.printOutput();
     }
 
     // Read the input in a file.
-    Master(String pathToFile) {
+   Master(String pathToFile) {
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(pathToFile));
@@ -92,6 +95,7 @@ public class Master {
 
             }
             this.inputRead();
+            this.printOutput();
 
         } catch (IOException e) {
             System.out.println("Critical error: " + e.getLocalizedMessage());
@@ -107,20 +111,45 @@ public class Master {
         if (model.equals(Constants.POS_2)) {
             // Solve for 2 pos model.
             Solver2Pos solver = new Solver2Pos();
-            Label2Pos[] solution = solver.solve(points, aspectRatio);
+            posSolution = solver.solve(points, aspectRatio);
         } 
         else if (model.equals(Constants.POS_4)) {
-            Solver4Pos solver4pos = new Solver4Pos();
-            Label2Pos[] solution = solver4pos.solve(points, aspectRatio);
+            Solver4Pos solver = new Solver4Pos();
+            posSolution = solver.solve(points, aspectRatio);
         } 
         else {
             // Solve for slider model.
             // TODO
         }
     }
+    
+    private void printOutput() {
+        
+        System.out.println("placement model: " + model);
+        System.out.println("aspect ratio: " + aspectRatio);
+        System.out.println("number of points: " + numOfPoints);
+        
+        if (model.equals(Constants.POS_SLIDER)) {
+            System.out.println("height: " + sliderSolution[0].height);
+            for (int i = 0; i < numOfPoints; i++) {
+                System.out.println(sliderSolution[i].point.getX() + " " + 
+                        sliderSolution[i].point.getY() + " " + 
+                        sliderSolution[i].placement);
+                
+            }
+        } else {
+            System.out.println("height: " + posSolution[0].height);
+            for (int i = 0; i < numOfPoints; i++) {
+                System.out.println(posSolution[i].point.getX() + " " + 
+                        posSolution[i].point.getY() + " " + 
+                        posSolution[i].posType);
+                
+            }
+        }
+    }
 
     //  ---------------------------
-    public void checkOverlap() {
+   /* public void checkOverlap() {
         if (model.equals("2pos")) {
             checkOverlap2Pos();
         }
@@ -185,7 +214,7 @@ public class Master {
         } else {
             return false;
         }
-    }
+    }*/
 
     public float calcOuterYValuePos(int point) {
 
