@@ -35,15 +35,15 @@ public class Solver2Pos extends Solver {
     final float MAX_HEIGHT = 100.0f;
         
     @Override
-    public LabelPos[] solve(Point2D[] inp, float aspectRatio) {
+    public LabelPos[] solve(Point2D[] inp, float aspectRatio, int numOfPoints) {
 
         // The input points.
         List<Point2D> points = Arrays.asList(inp);
         
         // The best solution found so far.
-        Rectangle2D[] bestSolution = new Rectangle2D[points.size()];
+        Rectangle2D[] bestSolution = new Rectangle2D[numOfPoints];
         // Holds the current solution.
-        Rectangle2D[] labels       = new Rectangle2D[points.size()];
+        Rectangle2D[] labels       = new Rectangle2D[numOfPoints];
 
         // Sort the input on the X then Y coordinate both ascending.
         Collections.sort(points, new PointCmp());
@@ -62,7 +62,7 @@ public class Solver2Pos extends Solver {
             // Gets set to true when there is no solution possible for the current height. 
             boolean impossible = false;
             
-            for (int i = 0; i < points.size(); i++) {
+            for (int i = 0; i < numOfPoints; i++) {
                 Point2D point = points.get(i);
                 // The label is first positioned on the right.
                 Rectangle2D pos = new Rectangle2D.Float((float) point.getX(), (float) point.getY(), width, height);
@@ -81,7 +81,7 @@ public class Solver2Pos extends Solver {
                     pos = new Rectangle2D.Float((float) point.getX() - width, (float) point.getY(), width, height);
                     
                     // Compare the label with the points not yet calculated (points to its left).
-                    for (int j = i; j < points.size(); j++) {
+                    for (int j = i; j < numOfPoints; j++) {
                         if (pos.contains(points.get(j))) {
                             impossible = true;
                             break;
@@ -106,11 +106,11 @@ public class Solver2Pos extends Solver {
             }
         }
         // Convert all Rectangle2D objects to LabelPos objects.
-        LabelPos[] l = new LabelPos[points.size()];
+        LabelPos[] l = new LabelPos[numOfPoints];
         LabelPos pos = new LabelPos();
         pos.height    = height;
         
-        for (int i = 0; i < bestSolution.length ; i++) {
+        for (int i = 0; i < numOfPoints ; i++) {
             pos.point     = points.get(i);
             pos.posType   = (bestSolution[i].getCenterX() > pos.point.getX()) ? Constants.NORTHWEST : Constants.NORTHEAST;
             l[i] = pos;
