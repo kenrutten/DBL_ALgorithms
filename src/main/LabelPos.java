@@ -9,7 +9,8 @@ package main;
  *
  * @author Ewout
  */
-public class Label2Pos extends Label{
-    // The position type of the label, can take 2 values: NORTHEAST or NORTHWEST.
+public class LabelPos extends Label{
+    // The position type of the label, can take 4 values: NORTHEAST, NORTHWEST,
+        // SOUTHEAST and SOUTHWEST.
     String posType;
 }

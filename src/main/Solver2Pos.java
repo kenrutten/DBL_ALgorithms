@@ -35,7 +35,7 @@ public class Solver2Pos extends Solver {
     final float MAX_HEIGHT = 100.0f;
         
     @Override
-    public Label2Pos[] solve(Point2D[] inp, float aspectRatio) {
+    public LabelPos[] solve(Point2D[] inp, float aspectRatio) {
 
         // The input points.
         List<Point2D> points = Arrays.asList(inp);
@@ -105,14 +105,15 @@ public class Solver2Pos extends Solver {
                 height = height + ((MAX_HEIGHT - height) * 1.5f);
             }
         }
-        // Convert all Rectangle2D objects to Label2Pos objects.
-        Label2Pos[] l = new Label2Pos[points.size()];
+        // Convert all Rectangle2D objects to LabelPos objects.
+        LabelPos[] l = new LabelPos[points.size()];
+        LabelPos pos = new LabelPos();
+        pos.height    = height;
         
         for (int i = 0; i < bestSolution.length ; i++) {
-            Label2Pos pos = new Label2Pos();
-            pos.height    = height;
             pos.point     = points.get(i);
             pos.posType   = (bestSolution[i].getCenterX() > pos.point.getX()) ? Constants.NORTHWEST : Constants.NORTHEAST;
+            l[i] = pos;
         }
 
         return l;

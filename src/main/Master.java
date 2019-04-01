@@ -33,7 +33,7 @@ public class Master {
     float[] sliderPlacement;
     float height = 1.25f;
     LabelPos[] posSolution;
-    SliderPos[] sliderSolution;
+    LabelSlider[] sliderSolution;
 
     // Read the input via the scanner.
     Master() {
