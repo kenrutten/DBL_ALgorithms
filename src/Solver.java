@@ -19,6 +19,6 @@ public abstract class Solver {
      * @param aspectRatio The aspect ratio the labels should adhere to.
      * @return An array containing Label objects.
      */
-    public abstract Label[] solve(Point2D[] input, float aspectRatio);
+    public abstract Label[] solve(Point2D[] input, double aspectRatio);
 
 }

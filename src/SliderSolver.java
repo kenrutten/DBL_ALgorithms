@@ -40,7 +40,9 @@ public class SliderSolver extends Solver {
     private Point2D[] inputs;
     private Rectangle2D pos;  
     private double posX, posY, posW;
-
+    long start;
+    boolean done = false;
+    
     public boolean inside(Rectangle2D rect, Point2D point) {
         return point.getX() > rect.getX() && point.getX() < rect.getX() + rect.getWidth() && point.getY() >= rect.getY() && point.getY() < rect.getY() + rect.getHeight();
     }
@@ -52,28 +54,27 @@ public class SliderSolver extends Solver {
     }
     
     @Override
-    public LabelSlider[] solve(Point2D[] input, float aR) {
+    public LabelSlider[] solve(Point2D[] input, double aR) {
+        start = System.currentTimeMillis();
         aspectRatio = aR;
         inputs = Arrays.copyOf(input, input.length);
         Collections.sort(Arrays.asList(input), new PointCmp2());
-        this.aspectRatio = aspectRatio;
         l = new LabelSlider[input.length];
         boolean higher = false;
         boolean lower = false;
         boolean possible = true;
         int factor = 2;
-        height = 4;
+        height = 32;
         double change = height;
-        boolean max = false;
         adjustWidth();
         Map<Rectangle2D, Double> labels = new HashMap<>();
         Map<Rectangle2D, Double> solution = new HashMap<>();
         Map<Rectangle2D, Double> bestSol = new HashMap<>();
         double bestHeight = 0;
         int iterations = 0;
+        int maxIterations = 10;
         for (int i = 0; i < input.length; i++) {
             if (i == 0) {
-                max = true;
                 labels.clear();
                 solution.clear();
                 //System.out.println("Height: " + height + "     Change: " + change + "     Factor: " + factor);
@@ -154,11 +155,11 @@ public class SliderSolver extends Solver {
                     }
                 }
             }
-            if (!possible) {
-                if (higher) {
-                    lower = true;
-                }
-                if (iterations >= 5) {
+            if (!possible && !done) {
+//                if (higher) {
+//                    lower = true;
+//                }
+                if (iterations >= maxIterations) {
                     break;
                 }
 
@@ -182,6 +183,7 @@ public class SliderSolver extends Solver {
             }
 
             if (i == input.length - 1) {
+                
                 labels.keySet().forEach((rect) -> {
                     solution.put(rect, labels.get(rect));
                 });
@@ -194,7 +196,7 @@ public class SliderSolver extends Solver {
                     });
                 }
 
-                if (iterations < 5) {
+                if (iterations < maxIterations && !done) {
                     if (lower && higher) {
                         iterations++;
                         factor *= 2;
@@ -208,11 +210,17 @@ public class SliderSolver extends Solver {
                     }
                     higher = true;
 
+                    if(height < 0) {
+                        height = Double.MAX_VALUE;
+                        break;
+                    }
                     adjustWidth();
                     i = -1;
                 }
                 
-                
+                if(System.currentTimeMillis() - start >  25000) {
+                    done = true;
+                }
             }
         }
         convertToLabel(bestSol);
@@ -224,10 +232,10 @@ public class SliderSolver extends Solver {
             LabelSlider label = new LabelSlider();
             double px = rect.getX() + list.get(rect);
             double py = rect.getY();
-            label.height =(float) rect.getHeight();
+            label.height = rect.getHeight();
             label.point = new Point2D.Double(px, py);
             label.placement = 1 - (list.get(rect) / rect.getWidth());
-            for (int j = 0; j < list.size(); j++) {
+            for (int j = 0; j < inputs.length; j++) {
                 if (px == inputs[j].getX() && py == inputs[j].getY()) {
                     l[j] = label;
                     break;
@@ -238,6 +246,5 @@ public class SliderSolver extends Solver {
 
     void adjustWidth() {
         width = height * aspectRatio;
-        width = Math.ceil(width * 1000000d) / 1000000d;
     }
 }

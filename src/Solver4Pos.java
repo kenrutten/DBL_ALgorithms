@@ -18,9 +18,9 @@ public class Solver4Pos extends Solver {
 
     // The estimated max height that a label will take.
     boolean ceilingfound = false;
-    float high = 1.0f;
-    float low = 0.0f;
-    float optimalHeight;
+    double high = 0.1d;
+    double low = 0.0d;
+    double optimalHeight;
     int numOfPlacedLabels;
     Rectangle2D currentLabel;
     List<Point2D> sortedX; //all points sorted on X-value
@@ -31,7 +31,7 @@ public class Solver4Pos extends Solver {
     
         
     @Override
-    public LabelPos[] solve(Point2D[] inputPoints, float aspectRatio) {
+    public LabelPos[] solve(Point2D[] inputPoints, double aspectRatio) {
         numOfPoints = inputPoints.length;
         // The best solution found so far.
         bestSolution = new Rectangle2D[numOfPoints];
@@ -51,32 +51,32 @@ public class Solver4Pos extends Solver {
         
         
         // Start with a height of 50.0f use binary search on the height to come to a solution.
-        float height = high / 2.0f;
+        double height = high / 2.0d;
         int i = 0;
-        while (high - low >= 0.25) {
+        while (high - low >= 0.01) {
             boolean impossible = false;
-            float width = height * aspectRatio;
+            double width = height * aspectRatio;
             numOfPlacedLabels = 0;
             
             for (int j = 0; j < numOfPoints; j++) {
                 Point2D point = sortedX.get(j);//point that is currently being investigated
                 // The label is first positioned in the SOUTHEAST
-                currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY()-height, width, height);
+                currentLabel = new Rectangle2D.Double(point.getX()-width, point.getY()-height, width, height);
                 
-                boolean OverlapSW = checkLabelOverlap(label);
+                //boolean OverlapSW = checkLabelOverlap(label);
                 // Compare the label with the already placed label.
                 
                 // If there is overlap between the current label and already
                     //set label, place the label in the East.
-                if (OverlapSW) {
-                    currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY(), width, height);
+                if (checkPointOverlap(numOfPoints, j) || checkLabelOverlap(label)) {
+                    currentLabel = new Rectangle2D.Double(point.getX()-width, point.getY(), width, height);
                     // Compare the label with the points not yet calculated (points to its left).
-                    boolean OverLapNW = checkLabelOverlap(label);
+                    //boolean OverLapNW = checkLabelOverlap(label);
                     
-                    if (OverLapNW){
-                        currentLabel = new Rectangle2D.Float((float) point.getX(), (float) point.getY()-height, width, height);
+                    if (checkPointOverlap(numOfPoints, j) || checkLabelOverlap(label)){
+                        currentLabel = new Rectangle2D.Double(point.getX(), point.getY()-height, width, height);
                         if (checkPointOverlap(numOfPoints, j) || checkLabelOverlap(label)) {
-                            currentLabel = new Rectangle2D.Float((float) point.getX(), (float) point.getY()-height, width, height);
+                            currentLabel = new Rectangle2D.Double(point.getX(), point.getY(), width, height);
                              if (checkPointOverlap(numOfPoints, j) || checkLabelOverlap(label)) {
                                  impossible = true;
                                  ceilingfound = true;
@@ -88,10 +88,8 @@ public class Solver4Pos extends Solver {
                     
                 }
                 label[j] = currentLabel; //Add the current label
-                
                 numOfPlacedLabels++;
             }
-            
             if (!impossible) {
                 bestSolution = label.clone();
                 optimalHeight = height;
@@ -115,8 +113,6 @@ public class Solver4Pos extends Solver {
             low = 0;
             int searchValue = (int) (high-low)/2;
             int j;
-            boolean[] east = new boolean[numOfPoints];
-            boolean[] north = new boolean[numOfPoints];
             double xValue = unsorted.get(i).getX();
             double yValue = unsorted.get(i).getY();
             singleLabel.point = unsorted.get(i);
@@ -130,15 +126,14 @@ public class Solver4Pos extends Solver {
                     j = searchValue;
                     while (j >=0 && sortedX.get(j).getX() == xValue && !found) {
                         if (sortedX.get(j).getY() == yValue){
-                            if (bestSolution[j].getMaxX() > xValue) {
-                                east[j] = true;
-                            } else {
-                                east[j] = false;
-                            }
-                            if (bestSolution[j].getMaxY() > yValue) {
-                                north[j] = true;
-                            } else {
-                                north[j] = false;
+                            if (bestSolution[j].getCenterX() > xValue && bestSolution[j].getCenterY() > yValue) {
+                                singleLabel.posType = Constants.NORTHEAST;
+                            } else if (bestSolution[j].getCenterX() > xValue && bestSolution[j].getCenterY() < yValue){
+                                singleLabel.posType = Constants.SOUTHEAST;
+                            } else if (bestSolution[j].getCenterX() < xValue && bestSolution[j].getCenterY() > yValue){
+                                singleLabel.posType = Constants.NORTHWEST;
+                            } else if (bestSolution[j].getCenterX() < xValue && bestSolution[j].getCenterY() < yValue){
+                                singleLabel.posType = Constants.SOUTHWEST;
                             }
                             found = true;
                         }
@@ -147,30 +142,20 @@ public class Solver4Pos extends Solver {
                     j = searchValue;
                     while (j < numOfPoints && sortedX.get(j).getX() == xValue && !found) {
                         if (sortedX.get(j).getY() == yValue){
-                            if (bestSolution[j].getMaxX() > xValue) {
-                                east[j] = true;
-                            } else {
-                                east[j] = false;
-                            }
-                            if (bestSolution[j].getMaxY() > yValue) {
-                                north[j] = true;
-                            } else {
-                                north[j] = false;
+                            if (bestSolution[j].getCenterX() > xValue && bestSolution[j].getCenterY() > yValue) {
+                                singleLabel.posType = Constants.NORTHEAST;
+                            } else if (bestSolution[j].getCenterX() > xValue && bestSolution[j].getCenterY() < yValue){
+                                singleLabel.posType = Constants.SOUTHEAST;
+                            } else if (bestSolution[j].getCenterX() < xValue && bestSolution[j].getCenterY() > yValue){
+                                singleLabel.posType = Constants.NORTHWEST;
+                            } else if (bestSolution[j].getCenterX() < xValue && bestSolution[j].getCenterY() < yValue){
+                                singleLabel.posType = Constants.SOUTHWEST;
                             }
                             found = true;
                         }
                         j++;
                     }
                 }
-            }
-            if (north[i] && east[i]){
-                singleLabel.posType = Constants.NORTHEAST;
-            } else if (!north[i] && east[i]) {
-                singleLabel.posType = Constants.SOUTHEAST;
-            } else if (north[i] && !east[i]) {
-                singleLabel.posType = Constants.NORTHWEST;
-            } else {
-                singleLabel.posType = Constants.SOUTHWEST;
             }
             result[i] = singleLabel;
         } 
@@ -191,9 +176,9 @@ public class Solver4Pos extends Solver {
     }
     
     public boolean checkPointOverlap(int numOfPoints, int j) {
-        for (int l = j+1; l < numOfPoints; l++) {
-            if (currentLabel.getMaxX() >= sortedX.get(l).getX()){
-                if (currentLabel.contains(sortedX.get(l))) {
+        for (int k = j+1; k < numOfPoints; k++) {
+            if (currentLabel.getMaxX() >= sortedX.get(k).getX()){
+                if (currentLabel.contains(sortedX.get(k))) {
                     return true;
                 }
             } else {
@@ -204,19 +189,19 @@ public class Solver4Pos extends Solver {
     }
     
     
-    public float searchHeight(float currentHeight, boolean decrease) {
+    public double searchHeight(double currentHeight, boolean decrease) {
         if (ceilingfound) {
             if (decrease) {
                 high = currentHeight;
-                return (high + low) / 2;
+                return (high + low) / 2.0d;
             } else {
                 // Remember the best solution.
                 low = currentHeight;
-                return (high + low) / 2;
+                return (high + low) / 2.0d;
             }
         } else {
             low = currentHeight;
-            high = 2*currentHeight;
+            high = 2.0d * currentHeight;
             return high;
         }
         

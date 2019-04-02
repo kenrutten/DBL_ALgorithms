@@ -4,17 +4,11 @@
  * and open the template in the editor.
  */
 
-
-import java.awt.geom.Point2D;
-
 /**
  *
  * @author Ewout
  */
-// This class represents a single label.
-public class Label {
-    // The point associated with the label.
-    Point2D point;
-    // The height of the label.
-    double height;
+public class Label2Pos extends Label{
+    // The position type of the label, can take 2 values: NORTHEAST or NORTHWEST.
+    String posType;
 }

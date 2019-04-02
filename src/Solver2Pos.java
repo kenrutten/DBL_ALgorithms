@@ -45,7 +45,7 @@ class PointCmpY implements Comparator<Point2D> {
 public class Solver2Pos extends Solver {
         
     @Override
-    public LabelPos[] solve(Point2D[] inp, float aspectRatio) {
+    public LabelPos[] solve(Point2D[] inp, double aspectRatio) {
         int numOfPoints = inp.length;
         Point2D[] clone = inp.clone();
         // The input points.
@@ -56,13 +56,13 @@ public class Solver2Pos extends Solver {
         maxHeight = shift(maxHeight);
         
         // The best solution found so far.
-        Rectangle2D[] bestSolution = new Rectangle2D.Float[numOfPoints];
+        Rectangle2D[] bestSolution = new Rectangle2D.Double[numOfPoints];
         // Holds the current solution.
-        Rectangle2D[] labels       = new Rectangle2D.Float[numOfPoints];
+        Rectangle2D[] labels       = new Rectangle2D.Double[numOfPoints];
 
         // Use binary search on the height to come to a solution.
-        float height = maxHeight / 2.0f;
-        float lastHeight = maxHeight;
+        double height = maxHeight / 2.0f;
+        double lastHeight = maxHeight;
         boolean higher = false;
         boolean lower = false;
         
@@ -72,7 +72,7 @@ public class Solver2Pos extends Solver {
         // Loop until delta < 0.1
         while(Math.abs(lastHeight - height) > 0.1) {
 
-            float width  = aspectRatio * height;
+            double width  = aspectRatio * height;
 
             int numOfElements  = 0;
             // Gets set to true when there is no solution possible for the current height. 
@@ -82,7 +82,7 @@ public class Solver2Pos extends Solver {
                 Point2D point = points.get(i);
 
                 // The label is first positioned on the right.
-                Rectangle2D pos = new Rectangle2D.Float((float) point.getX(), (float) point.getY(), width, height);
+                Rectangle2D pos = new Rectangle2D.Double(point.getX(), point.getY(), width, height);
 
                 boolean intersects = false;
 
@@ -95,7 +95,7 @@ public class Solver2Pos extends Solver {
                 }
                 // If it intersects place the label on the left.
                 if (intersects) {
-                    pos = new Rectangle2D.Float((float) point.getX() - width, (float) point.getY(), width, height);
+                    pos = new Rectangle2D.Double(point.getX() - width, point.getY(), width, height);
                     
                     // Compare the label with the points not yet calculated (points to its left).
                     for (int j = i; j < numOfPoints; j++) {
@@ -124,8 +124,8 @@ public class Solver2Pos extends Solver {
             }
             // Use binary search on the height to find a solution.
             if (impossible) {
-                float h = height;
-                if(higher)height = height - (float)(Math.abs(lastHeight - height)/ 2.0);
+                double h = height;
+                if(higher)height = height - (Math.abs(lastHeight - height)/ 2.0);
                 else height /= 2;
                 lower = true;
                 lastHeight = h;
@@ -133,8 +133,8 @@ public class Solver2Pos extends Solver {
             } else {
                 // Remember the best solution.
                 bestSolution = labels.clone();
-                float h = height;
-                if(lower) height = height + (float)(Math.abs(lastHeight - height)/ 2.0);
+                double h = height;
+                if(lower) height = height + (Math.abs(lastHeight - height)/ 2.0);
                 else height *= 2;
                 higher = true;
                 lastHeight = h;
@@ -144,7 +144,7 @@ public class Solver2Pos extends Solver {
         // Convert all Rectangle2D objects to LabelPos objects.
         LabelPos[] l = new LabelPos[numOfPoints];
 
-        float finalHeight = (float)bestSolution[0].getHeight();//roundFourth((float)bestSolution[0].getHeight());
+        double finalHeight = bestSolution[0].getHeight();//roundFourth((float)bestSolution[0].getHeight());
 
         for (int i = 0; i < numOfPoints ; i++) {
             LabelPos pos = new LabelPos();
