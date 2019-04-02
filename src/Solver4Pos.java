@@ -1,4 +1,4 @@
-package main;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -29,12 +29,13 @@ public class Solver4Pos extends Solver {
     List<Point2D> unsorted;
     Rectangle2D[] bestHorizontal;
     Rectangle2D[] bestVertical;
+    int numOfPoints;
     
     
         
     @Override
-    public LabelPos[] solve(Point2D[] inputPoints, float aspectRatio, int numOfPoints) {
-      
+    public LabelPos[] solve(Point2D[] inputPoints, float aspectRatio) {
+        numOfPoints = inputPoints.length;
         // The best solution found so far.
         bestHorizontal = new Rectangle2D[numOfPoints];
         bestVertical = new Rectangle2D[numOfPoints];
@@ -72,18 +73,16 @@ public class Solver4Pos extends Solver {
             numOfPlacedLabels = 0;
             
             for (int j = 0; j < numOfPoints; j++) {
-                boolean labelOverlap = false; //true if the current label overlaps
-                                                  //with other horizontalLabel
                 Point2D point = sortedX.get(j);//point that is currently being investigated
                 // The label is first positioned in the West
                 currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY()-height, width, 2*height);
                 
-                labelOverlap = checkHorizontalLabelOverlap(horizontalLabel);
+                boolean XOverlap = checkHorizontalLabelOverlap(horizontalLabel);
                 // Compare the label with the already placed horizontalLabel.
                 
                 // If there is overlap between the current label and already
                     //set label, place the label in the East.
-                if (labelOverlap) {
+                if (XOverlap) {
                     currentLabel = new Rectangle2D.Float((float) point.getX(), (float) point.getY()-height, width, 2*height);
                     // Compare the label with the points not yet calculated (points to its left).
                     if (checkPointOverlap(numOfPoints, j) || checkHorizontalLabelOverlap(horizontalLabel)) {
@@ -96,13 +95,23 @@ public class Solver4Pos extends Solver {
                 
                 point = sortedY.get(j);
                 // The label is first positioned in the West
-                currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY()-height, 2*width, height);
-                labelOverlap = checkVerticalLabelOverlap(verticalLabel);
+                if (XOverlap){
+                    currentLabel = new Rectangle2D.Float((float) point.getX(), (float) point.getY()-height, width, height);
+                } else {
+                    currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY()-height, width, height);
+                }
+                //currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY()-height, 2*width, height);
+                boolean YOverlap = checkVerticalLabelOverlap(verticalLabel);
                 // Compare the label with the already placed horizontalLabel.
                 // If there is overlap between the current label and already
                     //set label, place the label in the East.
-                if (labelOverlap) {
-                    currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY(), 2*width, height);
+                if (YOverlap) {
+                    if (XOverlap) {
+                        currentLabel = new Rectangle2D.Float((float) point.getX(), (float) point.getY(), width, height);
+                    } else {
+                        currentLabel = new Rectangle2D.Float((float) point.getX()-width, (float) point.getY(), width, height);
+                    }
+                    
                     // Compare the label with the points not yet calculated (points above).
                     //impossible = checkVerticalPointOverlap(numOfPoints, j);
                     if (checkVerticalPointOverlap(numOfPoints, j) || checkVerticalLabelOverlap(verticalLabel)) {

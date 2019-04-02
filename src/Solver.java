@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package main;
+
 
 import java.awt.geom.Point2D;
 
@@ -19,5 +19,6 @@ public abstract class Solver {
      * @param aspectRatio The aspect ratio the labels should adhere to.
      * @return An array containing Label objects.
      */
-    public abstract Label[] solve(Point2D[] input, float aspectRatio, int numOfPoints);
+    public abstract Label[] solve(Point2D[] input, float aspectRatio);
+
 }

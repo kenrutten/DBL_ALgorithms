@@ -1,4 +1,4 @@
-package main;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -111,15 +111,20 @@ public class Master {
         if (model.equals(Constants.POS_2)) {
             // Solve for 2 pos model.
             Solver2Pos solver = new Solver2Pos();
-            posSolution = solver.solve(points, aspectRatio, numOfPoints);
+            posSolution = solver.solve(points, aspectRatio);
         } 
         else if (model.equals(Constants.POS_4)) {
-            Solver4Pos solver = new Solver4Pos();
-            posSolution = solver.solve(points, aspectRatio, numOfPoints);
+            //if (numOfPoints <= 25){
+                //Solver4PosSmall solver = new Solver4PosSmall();
+                //posSolution = solver.solve(points, aspectRatio);
+            //} else {
+                Solver4Pos solver = new Solver4Pos();
+                posSolution = solver.solve(points, aspectRatio);
+            //}
         } 
         else {
-            // Solve for slider model.
-            // TODO
+            SliderSolver solver = new SliderSolver();
+            sliderSolution = solver.solve(points, aspectRatio);
         }
     }
     
